@@ -188,171 +188,84 @@ Výsledky jsou znázorněny barvou rámečku jednotlivých obrázků.
 <div id="board"></div>
 
 <script>
-const PASSWORD = "ucitelka";
-let isTeacher = false;
-let boardData = [];
 
-const board = document.getElementById("board");
-const imageInput = document.getElementById("imageInput");
-const teacherControls = document.getElementById("teacher-controls");
+// OBRÁZKY
+const images = [
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/1/Fale%C5%A1%20nebo%20pravda%201.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/2/Fale%C5%A1%20nebo%20pravda%202.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/3/Fale%C5%A1%20nebo%20pravda%203.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/4/Fale%C5%A1%20nebo%20pravda%204.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/5/Fale%C5%A1%20nebo%20pravda%205.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/6/Fale%C5%A1%20nebo%20pravda%206.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/7/Fale%C5%A1%20nebo%20pravda%207.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/8/Fale%C5%A1%20nebo%20pravda%208.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/9/Fale%C5%A1%20nebo%20pravda%209.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/10/Fale%C5%A1%20nebo%20pravda%2010.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/11/Fale%C5%A1%20nebo%20pravda%2011.jpg"
+];
 
-/* ===== REŽIMY ===== */
-function teacherMode() {
-  if (prompt("Zadej heslo učitele:") !== PASSWORD) return;
-  isTeacher = true;
-  document.body.classList.add("teacher");
-  teacherControls.style.display = "block";
-  renderBoard();
-}
-function studentMode() {
-  isTeacher = false;
-  document.body.classList.remove("teacher");
-  teacherControls.style.display = "none";
-  renderBoard();
-}
+// ŘEŠENÍ
+const solutions = [
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/1/FnP%201.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/2/FnP%202.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/3/FnP%203.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/4/FnP%204.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/5/FnP%205.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/6/FnP%206.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/7/FnP%207.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/8/FnP%208.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/9/FnP%209.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/10/FnP%2010.jpg",
+"https://raw.githubusercontent.com/zspastelka/Odhalujeme-nesrovnalosti-v-AI-obrazcich/main/img/11/FnP%2011.jpg"
+];
 
-/* ===== TEXT PODLE BARVY ===== */
-function ratingText(color) {
-  if (color === "#2ecc71") return "AI výstup odpovídá původnímu návrhu";
-  if (color === "#f1c40f") return "AI návrh částečně změnila";
-  if (color === "#e74c3c") return "AI výstup je chybný / zavádějící";
-  return "";
-}
 
-/* ===== ULOŽENÍ ===== */
-function saveBoard() {
-  localStorage.setItem("ai_nastenka", JSON.stringify(boardData));
-}
-function loadBoard() {
-  const data = localStorage.getItem("ai_nastenka");
-  if (data) boardData = JSON.parse(data);
-}
-loadBoard();
+// GENEROVÁNÍ KARET
+images.forEach((src, i) => {
 
-/* ===== PŘIDÁNÍ OBRÁZKU ===== */
-imageInput.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const box = document.createElement("div");
+  box.className = "case";
 
-  const img = new Image();
-  const reader = new FileReader();
+  const title = document.createElement("h3");
+  title.textContent = "Obrázek " + (i+1);
 
-  reader.onload = ev => {
-    img.onload = () => {
-      const MAX = 800;
-      const scale = MAX / img.width;
-      const canvas = document.createElement("canvas");
-      canvas.width = MAX;
-      canvas.height = img.height * scale;
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      const optimized = canvas.toDataURL("image/jpeg", 0.7);
+  const imgBox = document.createElement("div");
+  imgBox.className = "img-box";
 
-      boardData.push({
-        img: optimized,
-        left: "20px",
-        top: (20 + boardData.length * 280) + "px",
-        color: "#2ecc71",
-        text: "Komentář učitele…"
-      });
+  const img = document.createElement("img");
+img.src = src;
 
-      saveBoard();
-      renderBoard();
-    };
-    img.src = ev.target.result;
+// ✅ kliknutí zvětší obrázek
+img.onclick = () => {
+  document.getElementById("bigImg").src = src;
+  document.getElementById("viewer").style.display = "flex";
+};
+
+
+  imgBox.appendChild(img);
+
+
+
+  const btnSolution = document.createElement("button");
+  btnSolution.textContent = "🔍 Co si myslíme my";
+
+  btnSolution.onclick = () => {
+    document.getElementById("bigImg").src = solutions[i];
+    document.getElementById("viewer").style.display = "flex";
   };
-  reader.readAsDataURL(file);
-  imageInput.value = "";
+
+  box.appendChild(title);
+  box.appendChild(imgBox);
+  box.appendChild(btnSolution);
+
+  board.appendChild(box);
 });
 
-/* ===== VYKRESLENÍ ===== */
-function renderBoard() {
-  board.innerHTML = "";
-  boardData.forEach((d, i) => {
-    const item = document.createElement("div");
-    item.className = "item";
-    item.style.left = d.left;
-    item.style.top = d.top;
-    item.style.borderColor = d.color;
-
-    const img = document.createElement("img");
-    img.src = d.img;
-
-    // ===== BLOK PODLE REŽIMU =====
-    let ratingBlock;
-    if (isTeacher) {
-      ratingBlock = document.createElement("div");
-      ratingBlock.className = "color-buttons";
-
-      [
-        {c:"#2ecc71", cls:"green"},
-        {c:"#f1c40f", cls:"yellow"},
-        {c:"#e74c3c", cls:"red"}
-      ].forEach(o=>{
-        const btn=document.createElement("div");
-        btn.className="color-btn "+o.cls;
-        btn.onclick=()=>{
-          d.color=o.c;
-          saveBoard();
-          renderBoard();
-        };
-        ratingBlock.appendChild(btn);
-      });
-
-    } else {
-      ratingBlock = document.createElement("div");
-      ratingBlock.className = "rating-text";
-      ratingBlock.textContent = ratingText(d.color);
-    }
-
-    const del = document.createElement("div");
-    del.className = "delete-btn";
-    del.textContent = "✖ Odstranit";
-    del.onclick = () => {
-      boardData.splice(i, 1);
-      saveBoard();
-      renderBoard();
-    };
-
-    const text = document.createElement("div");
-    text.className = "text-box";
-    text.contentEditable = isTeacher;
-    text.innerText = d.text;
-    text.oninput = () => {
-      d.text = text.innerText;
-      saveBoard();
-    };
-
-    item.append(img, ratingBlock, del, text);
-    board.appendChild(item);
-    if (isTeacher) makeDraggable(item, d);
-  });
+// ZAVŘENÍ
+function closeViewer(){
+  document.getElementById("viewer").style.display = "none";
 }
 
-/* ===== DRAG ===== */
-function makeDraggable(el, data) {
-  let dx, dy, drag = false;
-  el.onmousedown = e => {
-    if (!isTeacher) return;
-    drag = true;
-    dx = e.clientX - el.offsetLeft;
-    dy = e.clientY - el.offsetTop;
-  };
-  document.onmousemove = e => {
-    if (!drag) return;
-    el.style.left = e.clientX - dx + "px";
-    el.style.top = e.clientY - dy + "px";
-    data.left = el.style.left;
-    data.top = el.style.top;
-  };
-  document.onmouseup = () => {
-    if (drag) {
-      drag = false;
-      saveBoard();
-    }
-  };
-}
-
-renderBoard();
 </script>
 
 </body>
