@@ -146,46 +146,48 @@ body.teacher .text-box { background: #fafafa; }
 
 <body>
 
-<!-- LOGO O2 -->
-<div id="logo-left">
-  <img src="logo-o2-chytra-skola.png" alt="O2 Chytrá škola">
-  <div class="support-text">Podpořeno z programu O2 Chytrá škola.</div>
+<div class="header">
+ 
+<div class="header-left">
+    <img src="logo-o2-chytra-skola.png">
+    <div class="support-text">Podpořeno z programu O2 Chytrá škola.</div>
+  </div>
+
+  <div class="header-center">
+    <h1>Od kresby k AI realitě</h1>
+    <h2>Jak AI pracovala s naším návrhem aneb limity AI</h2>
+  </div>
+
+  
+    <div class="header-right">
+    <img src="logo-zs-pastelka.png">
+  </div>
+
 </div>
 
 
-
-<!-- LOGO ŠKOLY -->
-<div id="logo-right">
-  <img src="logo-zs-pastelka.png" alt="ZŠ Pastelka">
-</div>
-
-
-<h1>Od kresby k AI realitě</h1>
-<h2>Jak AI pracovala s naším návrhem aneb limity AI</h2>
-
+  
 <div id="legend">
   <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>AI výstup odpovídá původnímu návrhu</div>
   <div class="legend-item"><div class="legend-color" style="background:#f1c40f"></div>AI návrh částečně změnila</div>
   <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>AI výstup je chybný / zavádějící</div>
 </div>
 
+
+  
 <div id="method">
 <b>Jak jsme pracovali:</b><br>
-Žáci porovnávali původní kreslený obrázek s obrázkem vygenerovaným pomocí umělé inteligence.
-Na základě dotazníku a společné diskuze hodnotili shodu, změny a možné zavádějící prvky.
+Nakreslili jsme postavy s našimi navrhovanými oblečeními na ZOH 2026, poté jsme je díky AI oživili. Následně jsem kriticky posuzovali na základě dotazníku a společné diskuze shodu, změny a možné zavádějící prvky.
 Výsledky jsou znázorněny barvou rámečku jednotlivých obrázků.
 </div>
 
-<div id="mode-bar">
-  <button onclick="teacherMode()">Učitelský režim</button>
-  <button onclick="studentMode()">Žákovský režim</button>
+<div class="grid" id="board"></div>
+
+<div id="viewer">
+  <div id="close" onclick="closeViewer()">✖</div>
+  <img id="bigImg">
 </div>
 
-<div id="teacher-controls">
-  <input type="file" id="imageInput" accept="image/*">
-</div>
-
-<div id="board"></div>
 
 <script>
 
